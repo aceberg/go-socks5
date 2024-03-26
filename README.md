@@ -5,6 +5,14 @@ Provides the `socks5` package that implements a [SOCKS5 server](http://en.wikipe
 SOCKS (Secure Sockets) is used to route traffic between a client and server through
 an intermediate proxy layer. This can be used to bypass firewalls or NATs.
 
+About this fork
+=======
+This is a fork of https://github.com/armon/go-socks5 with the changes needed for my other project:   
+* Added `Close()` function
+* Removed SOCKS version check
+
+
+
 Feature
 =======
 
