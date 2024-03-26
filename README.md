@@ -9,9 +9,6 @@ About this fork
 =======
 This is a fork of https://github.com/armon/go-socks5 with the changes needed for my other project:   
 * Added `Close()` function
-* Removed SOCKS version check
-
-
 
 Feature
 =======

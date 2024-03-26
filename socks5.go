@@ -132,6 +132,20 @@ func (s *Server) ServeConn(conn net.Conn) error {
 	defer conn.Close()
 	bufConn := bufio.NewReader(conn)
 
+	// Read the version byte
+	version := []byte{0}
+	if _, err := bufConn.Read(version); err != nil {
+		s.config.Logger.Printf("[ERR] socks: Failed to get version byte: %v", err)
+		return err
+	}
+
+	// Ensure we are compatible
+	if version[0] != socks5Version {
+		err := fmt.Errorf("Unsupported SOCKS version: %v", version)
+		s.config.Logger.Printf("[ERR] socks: %v", err)
+		return err
+	}
+
 	// Authenticate the connection
 	authContext, err := s.authenticate(conn, bufConn)
 	if err != nil {
