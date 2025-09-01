@@ -2,17 +2,21 @@ package socks5
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"log"
 	"net"
 	"os"
-
-	"golang.org/x/net/context"
 )
 
 const (
 	socks5Version = uint8(5)
 )
+
+// ErrorLogger error handler, compatible with std logger
+type ErrorLogger interface {
+	Printf(format string, v ...interface{})
+}
 
 // Config is used to setup and configure a Server
 type Config struct {
@@ -42,15 +46,18 @@ type Config struct {
 	// BindIP is used for bind or udp associate
 	BindIP net.IP
 
+	// BindIP is used for bind or udp associate
+	BindPort int
+
 	// Logger can be used to provide a custom log target.
 	// Defaults to stdout.
-	Logger *log.Logger
+	Logger ErrorLogger
 
 	// Optional function for dialing out
 	Dial func(ctx context.Context, network, addr string) (net.Conn, error)
 }
 
-// Server is reponsible for accepting connections and handling
+// Server is responsible for accepting connections and handling
 // the details of the SOCKS5 protocol
 type Server struct {
 	config      *Config
@@ -124,7 +131,6 @@ func (s *Server) Serve() error {
 		}
 		go s.ServeConn(conn)
 	}
-	return nil
 }
 
 // ServeConn is used to serve a single connection.
@@ -135,33 +141,33 @@ func (s *Server) ServeConn(conn net.Conn) error {
 	// Read the version byte
 	version := []byte{0}
 	if _, err := bufConn.Read(version); err != nil {
-		s.config.Logger.Printf("[ERR] socks: Failed to get version byte: %v", err)
+		s.config.Logger.Printf("socks: Failed to get version byte: %v", err)
 		return err
 	}
 
 	// Ensure we are compatible
 	if version[0] != socks5Version {
-		err := fmt.Errorf("Unsupported SOCKS version: %v", version)
-		s.config.Logger.Printf("[ERR] socks: %v", err)
+		err := fmt.Errorf("unsupported SOCKS version: %v", version)
+		s.config.Logger.Printf("socks: %v", err)
 		return err
 	}
 
 	// Authenticate the connection
 	authContext, err := s.authenticate(conn, bufConn)
 	if err != nil {
-		err = fmt.Errorf("Failed to authenticate: %v", err)
-		s.config.Logger.Printf("[ERR] socks: %v", err)
+		err = fmt.Errorf("failed to authenticate: %v", err)
+		s.config.Logger.Printf("socks: %v", err)
 		return err
 	}
 
 	request, err := NewRequest(bufConn)
 	if err != nil {
-		if err == unrecognizedAddrType {
-			if err := sendReply(conn, addrTypeNotSupported, nil); err != nil {
-				return fmt.Errorf("Failed to send reply: %v", err)
+		if err == errUnrecognizedAddrType {
+			if err := sendReply(conn, ReplyAddrTypeNotSupported, nil); err != nil {
+				return fmt.Errorf("failed to send reply: %v", err)
 			}
 		}
-		return fmt.Errorf("Failed to read destination address: %v", err)
+		return fmt.Errorf("failed to read destination address: %v", err)
 	}
 	request.AuthContext = authContext
 	if client, ok := conn.RemoteAddr().(*net.TCPAddr); ok {
@@ -170,8 +176,8 @@ func (s *Server) ServeConn(conn net.Conn) error {
 
 	// Process the client request
 	if err := s.handleRequest(request, conn); err != nil {
-		err = fmt.Errorf("Failed to handle request: %v", err)
-		s.config.Logger.Printf("[ERR] socks: %v", err)
+		err = fmt.Errorf("failed to handle request: %v", err)
+		s.config.Logger.Printf("socks: %v", err)
 		return err
 	}
 

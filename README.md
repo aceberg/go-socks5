@@ -1,4 +1,4 @@
-go-socks5 [![Build Status](https://travis-ci.org/armon/go-socks5.png)](https://travis-ci.org/armon/go-socks5)
+Socks5 
 =========
 
 Provides the `socks5` package that implements a [SOCKS5 server](http://en.wikipedia.org/wiki/SOCKS).
@@ -9,6 +9,7 @@ About this fork
 =======
 This is a fork of https://github.com/armon/go-socks5 with the changes needed for my other project:   
 * Added `Close()` function
+* Merged UDP support from https://github.com/haxii/socks5
 
 Feature
 =======
@@ -17,6 +18,7 @@ The package has the following features:
 * "No Auth" mode
 * User/Password authentication
 * Support for the CONNECT command
+* Support for the ASSOCIATE command
 * Rules to do granular filtering of commands
 * Custom DNS resolution
 * Unit tests
@@ -26,8 +28,6 @@ TODO
 
 The package still needs the following:
 * Support for the BIND command
-* Support for the ASSOCIATE command
-
 
 Example
 =======
