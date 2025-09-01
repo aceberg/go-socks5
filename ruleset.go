@@ -1,7 +1,7 @@
 package socks5
 
 import (
-	"golang.org/x/net/context"
+	"context"
 )
 
 // RuleSet is used to provide custom rules to allow or prohibit actions
@@ -27,13 +27,14 @@ type PermitCommand struct {
 	EnableAssociate bool
 }
 
+// Allow ..
 func (p *PermitCommand) Allow(ctx context.Context, req *Request) (context.Context, bool) {
 	switch req.Command {
-	case ConnectCommand:
+	case CommandConnect:
 		return ctx, p.EnableConnect
-	case BindCommand:
+	case CommandBind:
 		return ctx, p.EnableBind
-	case AssociateCommand:
+	case CommandAssociate:
 		return ctx, p.EnableAssociate
 	}
 
