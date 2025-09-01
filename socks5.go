@@ -122,7 +122,8 @@ func (s *Server) Close() {
 }
 
 // Serve is used to serve connections from a listener
-func (s *Server) Serve(l net.Listener) error {
+func (s *Server) Serve() error {
+	l := s.Listener
 	for {
 		conn, err := l.Accept()
 		if err != nil {

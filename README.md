@@ -1,4 +1,4 @@
-Socks5 [![Build Status](https://travis-ci.org/haxii/socks5.png)](https://travis-ci.org/haxii/socks5)
+Socks5 
 =========
 
 Provides the `socks5` package that implements a [SOCKS5 server](http://en.wikipedia.org/wiki/SOCKS).
@@ -9,6 +9,7 @@ About this fork
 =======
 This is a fork of https://github.com/armon/go-socks5 with the changes needed for my other project:   
 * Added `Close()` function
+* Merged UDP support from https://github.com/haxii/socks5
 
 Feature
 =======
