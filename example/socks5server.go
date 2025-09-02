@@ -3,7 +3,7 @@ package main
 import (
 	"net"
 
-	"github.com/haxii/socks5"
+	"github.com/aceberg/socks5"
 )
 
 func main() {
